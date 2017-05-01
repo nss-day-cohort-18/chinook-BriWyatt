@@ -179,6 +179,13 @@ SELECT  e.EmployeeId, COUNT(c.SupportRepId) as "Total Sales Made", e.FirstName |
 
 
  -- 20. top_agent.sql: Which sales agent made the most in sales over all? 
+SELECT  e.FirstName || " " || e.LastName as "Sales Rep Name", ROUND(Sum(Total)) as "total amount in Sales", count(e.employeeId) as "number of sales made"
+From Invoice i
+join customer c
+on i.CustomerId = c.CustomerId
+join employee e
+on c.SupportRepId = e.employeeId
+group by "Sales Rep Name"
 
 
  -- 21. sales_agent_customer_count.sql: Provide a query that shows the count 
@@ -202,7 +209,6 @@ SELECT e.FirstName , e.LastName, COUNT(c.CustomerId) as "Agent's Number of Custo
 
 
  -- 24 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks over all.  
-
 
 
 
