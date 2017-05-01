@@ -105,22 +105,114 @@ SELECT COUNT(InvoiceLineId)
 FROM InvoiceLine
 GROUP BY (InvoiceId)
 
-
 -- 12. line_item_track.sql: Provide a query that includes the track name
 --     with each invoice line item.
 
 SELECT InvoiceLine.InvoiceLineId, Track.Name 
-FROM InvoiceLine
-INNER JOIN Track on InVoiceLine.TrackId = Track.TrackId
+FROM InvoicseLine
+INNER JOIN Track ON InVoiceLine.TrackId = Track.TrackId
 ORDER BY InvoiceLineId;
 
+-- 13. line_item_track_artist.sql : Provide a query that includes 
+-- the purchased track name AND artist name with each invoice line item.
+
+SELECT a.InvoiceLineId, b.Name, d.Name
+FROM InvoiceLine a
+    JOIN Track b
+    ON a.TrackId = b.TrackId
+    JOIN Album c 
+    ON b.AlbumId = c.AlbumId
+    JOIN Artist d
+    ON c.ArtistId = d.ArtistId
+    ORDER BY a.InvoiceLineId;
+
+-- 14. country_invoices.sql: Provide a query that 
+--     shows the # of invoices per country. HINT: GROUP BY
+
+SELECT BillingCountry, COUNT(InvoiceID) as "# of invoices per country"
+    FROM Invoice
+    GROUP BY BillingCountry;
+
+-- 15. playlists_track_count.sql: Provide a query that shows
+-- the total number of tracks in each playlist. The Playlist name
+-- should be included on the resulant table.
+
+SELECT pl.Name, Count(plt.PlaylistId)
+    FROM Playlist pl
+     JOIN PlaylistTrack plt
+    ON pl.PlaylistId = plt.PlaylistId
+    GROUP BY pl.PlaylistId Playlist pl
+    LEFT JOIN PlaylistTrack plt
+    ON pl.PlaylistId = plt.PlaylistId
+    GROUP BY pl.PlaylistId;
+
+-- 16. tracks_no_id.sql: Provide a query that shows all the Tracks, 
+-- but displays no IDs. The result should include the Album name,
+--  Media type and Genre.
+
+SELECT t.Name "Track Name", a.Title as "Album Name" , m.Name as "Media Type" , g.name as "Genre"
+    FROM Track t
+    LEFT JOIN Album a
+    ON t.AlbumId = a.AlbumId
+    LEFT JOIN MediaType m 
+    ON t.MediaTypeId = m.MediaTypeId
+    LEFT JOIN Genre g
+    ON t.GenreId = g.GenreId
+    GROUP BY t.Name;
 
 
-
-
-
+-- 17. invoices_line_item_count.sql: Provide a query that shows
+ -- all Invoices but includes the # of invoice line items.
 
  
- 
+
+ -- 18. sales_agent_total_sales.sql: Provide a query that shows total sales 
+ --     made by each sales agent. 
+SELECT  e.EmployeeId, COUNT(c.SupportRepId) as "Total Sales Made", e.FirstName || " " || e.LastName as "Sales Agent Name"
+  FROM Employee e
+  JOIN Customer c
+  ON e.EmployeeId = c.SupportRepId
+  Group by e.employeeId;
+
+ -- 19. top_2009_agent.sql: Which sales agent made the most in sales in 2009? 
+ -- Hint: Use the MAX function on a subquery.  
+
+
+ -- 20. top_agent.sql: Which sales agent made the most in sales over all? 
+
+
+ -- 21. sales_agent_customer_count.sql: Provide a query that shows the count 
+ -- of customers assigned to each sales agent. 
+SELECT e.FirstName , e.LastName, COUNT(c.CustomerId) as "Agent's Number of Customers" 
+  From Customer c
+  Join Employee e
+  On c.SupportRepId = e.Employee
+  GROUP BY EmployeeId
+  ORDER BY COUNT(c.CustomerId);
+
+ -- 22. sales_per_country.sql: Provide a query that shows the total sales per country. 
+
+
+
+
+ -- 23. top_country.sql: Which country's customers spent the most 
+
+
+
+
+
+ -- 24 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks over all.  
+
+
+
+
+
+ -- 25 top_3_artists.sql: Provide a query that shows the top 3 best selling artists. 
+
+
+
+
+ -- 26. top_media_type.sql: Provide a query that shows the most purchased Media Type. 
+
  
 
