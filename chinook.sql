@@ -164,7 +164,11 @@ SELECT t.Name "Track Name", a.Title as "Album Name" , m.Name as "Media Type" , g
 -- 17. invoices_line_item_count.sql: Provide a query that shows
  -- all Invoices but includes the # of invoice line items.
 
- 
+SELECT ivl.InvoiceId, count(iv.invoiceId) as "number of invoice lines per Invoice"
+FROM Invoice iv
+JOIN InvoiceLine ivl
+ON Iv.InvoiceId = ivl.InvoiceId
+group by ivl.invoiceId
 
  -- 18. sales_agent_total_sales.sql: Provide a query that shows total sales 
  --     made by each sales agent. 
@@ -174,11 +178,22 @@ SELECT  e.EmployeeId, COUNT(c.SupportRepId) as "Total Sales Made", e.FirstName |
   ON e.EmployeeId = c.SupportRepId
   Group by e.employeeId;
 
- -- 19. top_2009_agent.sql: Which sales agent made the most in sales in 2009? 
+-- 19. top_2009_agent.sql: Which sales agent 
+ -- made the most in sales in 2009? 
  -- Hint: Use the MAX function on a subquery.  
 
+-- Select max (totalsales) 
+--     as "Highest Sales Earned in 2009",
+--     "Employee Name"
+    
+--     From (select sum(I.Total) as totalsales,
+--             E.FirstName || " " || E.LastName as "Employee Name"
+--     From Employee E 
+--     join Customer C on E.EmployeeId = C.SupportRepId 
+--     join Invoice I on C.CustomerId = I.CustomerId 
+    
+--     group by E.EmployeeId)
 
- -- 20. top_agent.sql: Which sales agent made the most in sales over all? 
 SELECT  e.FirstName || " " || e.LastName as "Sales Rep Name", ROUND(Sum(Total)) as "total amount in Sales", count(e.employeeId) as "number of sales made"
 From Invoice i
 join customer c
@@ -187,6 +202,18 @@ join employee e
 on c.SupportRepId = e.employeeId
 group by "Sales Rep Name"
 
+
+
+
+-- - 20. top_agent.sql: Which sales agent made the most in sales over all? 
+SELECT  e.FirstName || " " || e.LastName as "Sales Rep Name", ROUND(Sum(Total)) as "total amount in Sales", count(e.employeeId) as "number of sales made"
+From Invoice i
+join customer c
+on i.CustomerId = c.CustomerId
+join employee e
+on c.SupportRepId = e.employeeId
+group by "Sales Rep Name"
+Limit 1;
 
  -- 21. sales_agent_customer_count.sql: Provide a query that shows the count 
  -- of customers assigned to each sales agent. 
@@ -198,14 +225,20 @@ SELECT e.FirstName , e.LastName, COUNT(c.CustomerId) as "Agent's Number of Custo
   ORDER BY COUNT(c.CustomerId);
 
  -- 22. sales_per_country.sql: Provide a query that shows the total sales per country. 
+SELECT Distinct Invoice.BillingCountry as Country, COUNT(Invoice.InvoiceId) as "total # of sales"
+FROM Invoice
+JOIN InvoiceLine
+ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+GROUP BY Invoice.BillingCountry;
 
+-- - 23. top_country.sql: Which country's customers spent the most 
 
-
-
- -- 23. top_country.sql: Which country's customers spent the most 
-
-
-
+SELECT Distinct a.BillingCountry as "Country", Sum(b.Total) as "total spent"
+FROM Invoice a 
+JOIN Invoice b
+ON a.InvoiceId = b.InvoiceId
+group by a.BillingCountry
+ORDER BY Sum(a.total) DESC
 
 
  -- 24 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks over all.  
@@ -213,7 +246,7 @@ SELECT e.FirstName , e.LastName, COUNT(c.CustomerId) as "Agent's Number of Custo
 
 
 
- -- 25 top_3_artists.sql: Provide a query that shows the top 3 best selling artists. 
+-- - 25 top_3_artists.sql: Provide a query that shows the top 3 best selling artists. 
 
 
 
