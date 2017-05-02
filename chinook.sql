@@ -182,17 +182,35 @@ SELECT  e.EmployeeId, COUNT(c.SupportRepId) as "Total Sales Made", e.FirstName |
  -- made the most in sales in 2009? 
  -- Hint: Use the MAX function on a subquery.  
 
--- Select max (totalsales) 
---     as "Highest Sales Earned in 2009",
---     "Employee Name"
+
+Select max(Sales.TotalSales) as TopSales,
+  Sales.EmployeeName 
+from 
+  (select
+    sum(i.Total) TotalSales,
+    e.FirstName || ' ' || e.lastName as EmployeeName,
+    strftime(%Y, i.InvoiceDate) as InvoiceYear
+    from Invoice i, Employee e, Customer c
+    where i.CustomerId = c.CustomerId
+    and c.SupportRepId = e.EmployeeId
+    and InvoiceYear = '2009'
+    group by EmployeeName
+    order by TotalSales desc) Sales
+
+
+Select max (totalsales) 
+    as "Highest Sales Earned in 2009",
+    "Employee Name"
     
---     From (select sum(I.Total) as totalsales,
---             E.FirstName || " " || E.LastName as "Employee Name"
---     From Employee E 
---     join Customer C on E.EmployeeId = C.SupportRepId 
---     join Invoice I on C.CustomerId = I.CustomerId 
-    
---     group by E.EmployeeId)
+    From (select sum(I.Total) as totalsales,
+            E.FirstName || " " || E.LastName as "Employee Name"
+    From Employee E 
+    join Customer C on E.EmployeeId = C.SupportRepId 
+    join Invoice I on C.CustomerId = I.CustomerId 
+    group by E.EmployeeId)
+
+
+
 
 SELECT  e.FirstName || " " || e.LastName as "Sales Rep Name", ROUND(Sum(Total)) as "total amount in Sales", count(e.employeeId) as "number of sales made"
 From Invoice i
@@ -241,17 +259,61 @@ group by a.BillingCountry
 ORDER BY Sum(a.total) DESC
 
 
- -- 24 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks over all.  
+-- 24 top_2013_track.sql provide a query that shows the most purchased track of 2013.
+SELECT Track.Name, Count(InvoiceLine.InvoiceId)
+From InvoiceLine
+JOIN Track
+ON InvoiceLine.TrackId = Track.TrackId
+Join Invoice
+ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+WHERE strftime('%Y', InvoiceDate)
+IN ('2013')
+Group by Invoice.InvoiceId
+ORDER BY Count(InvoiceLine.InvoiceId) DESC
+Limit 1;
 
 
 
+ -- 24 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks of all.  
+SELECT Track.Name, Count(InvoiceLine.InvoiceId)
+From InvoiceLine
+JOIN Track
+ON InvoiceLine.TrackId = Track.TrackId
+GROUP BY Track.Name
+ORDER BY Count(InvoiceLine.InvoiceId) DESC
+Limit 5;
 
--- - 25 top_3_artists.sql: Provide a query that shows the top 3 best selling artists. 
 
 
+ -- 25 top_3_artists.sql: Provide a query that shows the top 3 best selling artists. 
+
+SELECT Distinct Count(Invl.InvoiceId) as totalSales, art.Name as ArtistName
+FROM InVoiceLine Invl
+JOIN Track T
+ON Invl.TrackId = T.TrackId
+JOIN Album Al
+ON t.AlbumId = Al.AlbumId
+JOIN Artist Art
+ON Al.ArtistId = Art.ArtistId
+Group by Art.Name
+Order By "totalSales" DESC
+Limit 3;
 
 
  -- 26. top_media_type.sql: Provide a query that shows the most purchased Media Type. 
 
- 
+SELECT Count(M.MediaTypeId), M.Name
+From MediaType M
+JOIN Track T
+ON M.MediaTypeId = T.MediaTypeId
+Order by Count(M.MediaTypeId) 
+
+
+
+
+
+
+
+
+
 
